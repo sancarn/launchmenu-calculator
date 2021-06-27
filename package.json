@@ -1,0 +1,67 @@
+{
+    "name": "@launchmenu/applet-quickstart",
+    "private": true,
+    "version": "0.0.0",
+    "description": "A hello-world application for LM",
+    "types": "build/index.d.ts",
+    "files": [
+        "build/**/*.{js,d.ts}"
+    ],
+    "main": "build/index.js",
+    "scripts": {
+        "build": "lm-build-tools --build --production",
+        "dev": "lm-build-tools --watch --launch --entry ../node_modules/@launchmenu/core/build/startup.js",
+        "start": "lm-build-tools --launch --production --entry ../node_modules/@launchmenu/core/build/startup.js",
+        "start:dev": "lm-build-tools --launch --entry ../node_modules/@launchmenu/core/build/startup.js",
+        "clean": "lm-build-tools --cleanup",
+        "test": "jest -i",
+        "test-watch": "jest --watch -i",
+        "test-watch-debug": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --watch --config=\"jest.config.js\"",
+        "prepare": "npm run build",
+        "install-local": "electron scripts/installLocal.js",
+        "uninstall-local": "electron scripts/uninstallLocal.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/LaunchMenu/LM-applet-quickstart.git"
+    },
+    "keywords": [
+        "LaunchMenu",
+        "Applet",
+        "QuickStart"
+    ],
+    "author": "Tar van Krieken",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/LaunchMenu/LM-applet-quickstart/issues"
+    },
+    "homepage": "https://github.com/LaunchMenu/LM-applet-quickstart#readme",
+    "peerDependencies": {
+        "@launchmenu/core": "^0.1.1",
+        "model-react": "^4.0.1",
+        "react": "^17.0.0"
+    },
+    "devDependencies": {
+        "@launchmenu/core": "^0.1.4",
+        "@launchmenu/build-tools": "^0.1.0",
+        "@testing-library/jest-dom": "^5.5.0",
+        "@testing-library/react": "^10.0.3",
+        "@types/jest": "^26.0.0",
+        "@types/react": "^17.0.0",
+        "jest": "^26.0.1",
+        "model-react": "^4.0.1",
+        "react": "^17.0.0",
+        "ts-jest": "^26.1.0",
+        "electron": "^9.3.1",
+        "@launchmenu/applet-help": "^0.1.4",
+        "@launchmenu/applet-applet-manager": "^0.1.4",
+        "@launchmenu/applet-session-manager": "^0.1.4",
+        "@launchmenu/applet-settings-manager": "^0.1.4",
+        "@launchmenu/applet-window-manager": "^0.1.4",
+        "@launchmenu/applet-lm-recorder": "^0.1.4"
+    },
+    "gitHead": "022dbc089423d10ee0528697003769d2d3aeb7d4",
+    "publishConfig": {
+        "access": "public"
+    }
+}
