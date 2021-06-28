@@ -28,7 +28,7 @@ const {tokens, tokenList} = createHighlightTokens({
         group: Lexer.SKIPPED,
     },
 });
-tokens.mul.LONGER_ALT = tokens.pow;
+tokens.mul.LONGER_ALT = tokens.pow; //assign longer_alt
 
 //TODO: Move to helper library
 var factorialCache: number[] = [];
@@ -38,45 +38,46 @@ function factorial(n: number): number {
     if (factorialCache[n] > 0) return factorialCache[n];
     return (factorialCache[n] = factorial(n - 1) * n);
 }
-var functions = {
-    sin: Math.sin,
-    cos: Math.cos,
-    tan: Math.tan,
-    sinh: Math.sinh,
-    cosh: Math.cosh,
-    tanh: Math.tanh,
-    asin: Math.asin,
-    acos: Math.acos,
-    atan: Math.atan,
-    atan2: Math.atan2,
-    asinh: Math.asinh,
-    acosh: Math.acosh,
-    atanh: Math.atanh,
-    cbrt: Math.cbrt,
-    hypot: Math.hypot,
-    round: Math.round,
-    sign: Math.sign,
-    min: Math.min,
-    max: Math.max,
-    ceil: Math.ceil,
-    floor: Math.floor,
-    abs: Math.abs,
-    exp: Math.exp,
-    ln: Math.log,
-    log: Math.log,
-    log10: Math.log10,
-    rnd: Math.random,
-    sum: (...args: number[]): number => args.reduce((a, b) => a + b),
-    avg: (...args: number[]): number => {
-        return args.reduce((a, b) => a + b) / args.length;
-    },
-} as {[key: string]: any};
 
 export default class MathInterpreter extends HighlightParser<number> {
     constructor() {
         super(tokenList);
         this.performSelfAnalysis();
     }
+    public variables = {};
+    public functions = {
+        sin: Math.sin,
+        cos: Math.cos,
+        tan: Math.tan,
+        sinh: Math.sinh,
+        cosh: Math.cosh,
+        tanh: Math.tanh,
+        asin: Math.asin,
+        acos: Math.acos,
+        atan: Math.atan,
+        atan2: Math.atan2,
+        asinh: Math.asinh,
+        acosh: Math.acosh,
+        atanh: Math.atanh,
+        cbrt: Math.cbrt,
+        hypot: Math.hypot,
+        round: Math.round,
+        sign: Math.sign,
+        min: Math.min,
+        max: Math.max,
+        ceil: Math.ceil,
+        floor: Math.floor,
+        abs: Math.abs,
+        exp: Math.exp,
+        ln: Math.log,
+        log: Math.log,
+        log10: Math.log10,
+        rnd: Math.random,
+        sum: (...args: number[]): number => args.reduce((a, b) => a + b),
+        avg: (...args: number[]): number => {
+            return args.reduce((a, b) => a + b) / args.length;
+        },
+    } as {[key: string]: any};
 
     public evaluate(query: string): string | undefined {
         var {errors, result} = super.execute(query);
@@ -92,7 +93,7 @@ export default class MathInterpreter extends HighlightParser<number> {
         let result: number = this.SUBRULE(this.term);
         this.MANY(() => {
             const {tokenType} = this.OR([
-                {ALT: () => this.CONSUME(tokens.add)}, //
+                {ALT: () => this.CONSUME(tokens.add)},
                 {ALT: () => this.CONSUME(tokens.sub)},
             ]);
             const value = this.SUBRULE2(this.term);
@@ -104,7 +105,7 @@ export default class MathInterpreter extends HighlightParser<number> {
         let result = this.SUBRULE(this.powTerm);
         this.MANY(() => {
             const {tokenType} = this.OR([
-                {ALT: () => this.CONSUME(tokens.mul)}, //
+                {ALT: () => this.CONSUME(tokens.mul)},
                 {ALT: () => this.CONSUME(tokens.div)},
             ]);
             const value = this.SUBRULE2(this.powTerm);
@@ -150,8 +151,8 @@ export default class MathInterpreter extends HighlightParser<number> {
                 ALT: () => {
                     let functionName = this.CONSUME(tokens.functionName).image.toString();
                     let params = this.SUBRULE(this.params);
-                    if (typeof functions[functionName] == "function") {
-                        return functions[functionName](...params);
+                    if (typeof this.functions[functionName] == "function") {
+                        return this.functions[functionName](...params);
                     }
                 },
             },
@@ -174,6 +175,6 @@ export default class MathInterpreter extends HighlightParser<number> {
 }
 
 // const parser = new MathInterpreter();
-// const res = parser.execute(field.get());
+// const res = parser.execute("1*5!/10^3");
 // if (res.result) alert(res.result);
 // else alert("Parsing error!");
