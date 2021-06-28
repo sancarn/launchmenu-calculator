@@ -5,5 +5,5 @@
     "applet-window-manager": "node_modules/@launchmenu/applet-window-manager",
     "applet-lm-recorder": "node_modules/@launchmenu/applet-lm-recorder",
     "applet-help": "node_modules/@launchmenu/applet-help",
-    "hello-world": "./"
+    "applet-calculator": "./"
 }
