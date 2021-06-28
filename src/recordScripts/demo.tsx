@@ -14,7 +14,7 @@ export default declareVideoScript(
 
         try {
             destroyFakeAlert = setupFakeAlert(visualizer, controller);
-            controller.getSession()?.context.settings.get(settings).username.set("Bob");
+            //controller.getSession()?.context.settings.get(settings).username.set("Bob");
 
             await controller.resetLM();
 
