@@ -1,5 +1,5 @@
 import React, {FC} from "react";
-import {Field, useDataHook} from "model-react";
+
 import {
     Box,
     createSettings,
@@ -10,6 +10,7 @@ import {
     useIOContext,
 } from "@launchmenu/core";
 import {BiCalculator} from "react-icons/bi";
+import MathInterpreter from "./MathInterpreter/MathInterpreter";
 
 const info = {
     name: "Calculator",
@@ -38,31 +39,30 @@ const Content: FC<{query: string; result: string}> = ({query, result}) => {
         </Box>
     );
 };
-//
-const result = new Field("calculatorResult");
-const getResult = (query: string) => {
-    try {
-        var res = eval(query);
-        return res;
-    } catch (e) {
-        return;
-    }
-};
+
+const math = new MathInterpreter();
+
+// const res = parser.execute(field.get());
+// if (res.result) alert(res.result);
+// else alert("Parsing error!");
 
 export default declare({
     info,
     settings,
     async search(query, hook) {
-        var res;
-        if ((res = getResult(query.search))) {
-            result.set(res.toString());
+        //Get result as string
+        var result = math.evaluate(query.search);
+        if (result) {
             return {
                 item: {
+                    //Top priority
                     priority: Priority.EXTRAHIGH,
+
+                    //Create returned item
                     item: createStandardMenuItem({
-                        name: h => result.get(h),
+                        name: result,
                         icon: <BiCalculator />,
-                        content: <Content query={query.search} result={res} />,
+                        content: <Content query={query.search} result={result} />,
                         onExecute: () => {},
                     }),
                 },
