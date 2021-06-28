@@ -16,6 +16,8 @@ const {tokens, tokenList} = createHighlightTokens({
     div: {pattern: /\//, tags: [highlightTags.operator]},
     pow: {pattern: /\^|\*\*/, tags: [highlightTags.operator]},
     factorial: {pattern: /\!/, tags: [highlightTags.operator]},
+    paramSeperator: {pattern: /\,/, tags: [highlightTags.operator]},
+    functionName: {pattern: /[a-zA-Z_]\w+/, tags: [highlightTags.operator]},
     value: {
         pattern: /[0-9]+(?:\.[0-9]+)?/,
         tags: [highlightTags.literal, highlightTags.number],
@@ -36,6 +38,39 @@ function factorial(n: number): number {
     if (factorialCache[n] > 0) return factorialCache[n];
     return (factorialCache[n] = factorial(n - 1) * n);
 }
+var functions = {
+    sin: Math.sin,
+    cos: Math.cos,
+    tan: Math.tan,
+    sinh: Math.sinh,
+    cosh: Math.cosh,
+    tanh: Math.tanh,
+    asin: Math.asin,
+    acos: Math.acos,
+    atan: Math.atan,
+    atan2: Math.atan2,
+    asinh: Math.asinh,
+    acosh: Math.acosh,
+    atanh: Math.atanh,
+    cbrt: Math.cbrt,
+    hypot: Math.hypot,
+    round: Math.round,
+    sign: Math.sign,
+    min: Math.min,
+    max: Math.max,
+    ceil: Math.ceil,
+    floor: Math.floor,
+    abs: Math.abs,
+    exp: Math.exp,
+    ln: Math.log,
+    log: Math.log,
+    log10: Math.log10,
+    rnd: Math.random,
+    sum: (...args: number[]): number => args.reduce((a, b) => a + b),
+    avg: (...args: number[]): number => {
+        return args.reduce((a, b) => a + b) / args.length;
+    },
+} as {[key: string]: any};
 
 export default class MathInterpreter extends HighlightParser<number> {
     constructor() {
@@ -96,13 +131,35 @@ export default class MathInterpreter extends HighlightParser<number> {
         });
         return result;
     });
+    protected params = this.RULE("params", () => {
+        this.CONSUME(tokens.lBracket);
+        let params: number[] = [];
+        this.OPTION(() => {
+            params.push(this.SUBRULE(this.expression));
+            this.MANY(() => {
+                this.CONSUME(tokens.paramSeperator);
+                params.push(this.SUBRULE2(this.expression));
+            });
+        });
+        this.CONSUME(tokens.rBracket);
+        return params;
+    });
     protected factor = this.RULE("factor", () =>
         this.OR([
             {
                 ALT: () => {
-                    this.CONSUME(tokens.lBracket);
-                    const value = this.SUBRULE(this.expression);
-                    this.CONSUME(tokens.rBracket);
+                    let functionName = this.CONSUME(tokens.functionName).image.toString();
+                    let params = this.SUBRULE(this.params);
+                    if (typeof functions[functionName] == "function") {
+                        return functions[functionName](...params);
+                    }
+                },
+            },
+            {
+                ALT: () => {
+                    this.CONSUME2(tokens.lBracket);
+                    const value = this.SUBRULE3(this.expression);
+                    this.CONSUME2(tokens.rBracket);
                     return value;
                 },
             },
