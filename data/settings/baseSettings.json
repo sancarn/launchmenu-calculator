@@ -1,0 +1,406 @@
+{
+    "version": "0.0.0",
+    "data": {
+        "advancedUsage": false,
+        "controls": {
+            "menu": {
+                "execute": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "enter"
+                        ]
+                    },
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "ctrl",
+                            "right"
+                        ]
+                    }
+                ],
+                "up": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "up"
+                        ]
+                    },
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "ctrl",
+                            "up"
+                        ]
+                    }
+                ],
+                "down": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "down"
+                        ]
+                    },
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "ctrl",
+                            "down"
+                        ]
+                    }
+                ],
+                "selectItem": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "shift"
+                        ]
+                    }
+                ],
+                "openContextMenu": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "tab"
+                        ]
+                    }
+                ]
+            },
+            "field": {
+                "copy": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "meta",
+                            "c"
+                        ]
+                    }
+                ],
+                "paste": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "meta",
+                            "v"
+                        ]
+                    }
+                ],
+                "cut": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "meta",
+                            "x"
+                        ]
+                    }
+                ],
+                "home": [
+                    {
+                        "type": "down",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "home"
+                        ]
+                    }
+                ],
+                "end": [
+                    {
+                        "type": "down",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "end"
+                        ]
+                    }
+                ],
+                "selectAll": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "meta",
+                            "a"
+                        ]
+                    }
+                ],
+                "jumpWordLeft": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "alt",
+                            "left"
+                        ]
+                    }
+                ],
+                "jumpWordRight": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "alt",
+                            "right"
+                        ]
+                    }
+                ],
+                "left": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "left"
+                        ]
+                    }
+                ],
+                "right": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "right"
+                        ]
+                    }
+                ],
+                "up": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "up"
+                        ]
+                    }
+                ],
+                "down": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "down"
+                        ]
+                    }
+                ],
+                "expandSelection": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "shift"
+                        ]
+                    }
+                ],
+                "backspace": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "backspace"
+                        ]
+                    }
+                ],
+                "delete": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "delete"
+                        ]
+                    }
+                ],
+                "insertLine": [
+                    {
+                        "type": "down or repeat",
+                        "allowExtra": [
+                            "shift"
+                        ],
+                        "pattern": [
+                            "enter"
+                        ]
+                    }
+                ],
+                "indent": [
+                    {
+                        "type": "down or repeat",
+                        "pattern": [
+                            "tab"
+                        ]
+                    }
+                ],
+                "dedent": [
+                    {
+                        "type": "down or repeat",
+                        "pattern": [
+                            "shift",
+                            "tab"
+                        ]
+                    }
+                ],
+                "undo": [
+                    {
+                        "type": "down or repeat",
+                        "pattern": [
+                            "meta",
+                            "z"
+                        ]
+                    }
+                ],
+                "redo": [
+                    {
+                        "type": "down or repeat",
+                        "pattern": [
+                            "meta",
+                            "y"
+                        ]
+                    }
+                ]
+            },
+            "content": {
+                "contentUp": [
+                    {
+                        "type": "down or repeat",
+                        "pattern": [
+                            "pageUp"
+                        ]
+                    }
+                ],
+                "contentDown": [
+                    {
+                        "type": "down or repeat",
+                        "pattern": [
+                            "pageDown"
+                        ]
+                    }
+                ]
+            },
+            "common": {
+                "back": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "esc"
+                        ]
+                    },
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "ctrl",
+                            "left"
+                        ]
+                    }
+                ]
+            },
+            "shortcuts": {
+                "copy": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "meta",
+                            "c"
+                        ]
+                    }
+                ],
+                "copySecondary": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "ctrl",
+                            "shift",
+                            "c"
+                        ]
+                    }
+                ],
+                "paste": [
+                    {
+                        "type": "down",
+                        "pattern": [
+                            "ctrl",
+                            "v"
+                        ]
+                    }
+                ],
+                "search": {
+                    "openAtTrace": [
+                        {
+                            "type": "down",
+                            "pattern": [
+                                "ctrl",
+                                "o"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "search": {
+            "simpleSearchMethod": "",
+            "fuzzySearchSettings": {
+                "fuzziness": "medium",
+                "caseSensitive": false,
+                "allowPartialMatches": false,
+                "advanced": {
+                    "typoPenalty": 20,
+                    "skipPenalty": 40,
+                    "missingPenalty": 100,
+                    "distancePenalty": 1,
+                    "maximumCost": 150
+                }
+            }
+        },
+        "menu": {
+            "maxSearchMenuSize": 200,
+            "maxMenuSize": 200,
+            "categoryOrder": "first",
+            "showCategories": true,
+            "scrollSpeed": 70,
+            "scrollWrapSpeed": 200,
+            "scrollPadding": 50
+        },
+        "field": {
+            "blinkSpeed": {
+                "onTime": 1000,
+                "offTime": 1000
+            },
+            "blinkDelay": 1000,
+            "highlightingEnabled": true,
+            "editor": {
+                "lineWrapping": false
+            }
+        },
+        "content": {
+            "scrollSpeed": 30,
+            "homeContent": {
+                "visibility": "In empty menu",
+                "content": "LaunchMenu"
+            }
+        },
+        "customGlobalKeyListener": true
+    }
+}

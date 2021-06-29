@@ -1,5 +1,6 @@
 import {createHighlightTokens, HighlightParser, highlightTags} from "@launchmenu/core";
 import {Lexer} from "@launchmenu/core/build/textFields/syntax/HighlightParser";
+import {MathHelpers} from "./MathHelpers";
 
 const {tokens, tokenList} = createHighlightTokens({
     lBracket: {
@@ -19,7 +20,7 @@ const {tokens, tokenList} = createHighlightTokens({
     paramSeperator: {pattern: /\,/, tags: [highlightTags.operator]},
     functionName: {pattern: /[a-zA-Z_]\w+/, tags: [highlightTags.operator]},
     value: {
-        pattern: /[0-9]+(?:\.[0-9]+)?/,
+        pattern: /\-?(\d*\.)?\d+/,
         tags: [highlightTags.literal, highlightTags.number],
     },
     whiteSpace: {
@@ -28,21 +29,19 @@ const {tokens, tokenList} = createHighlightTokens({
         group: Lexer.SKIPPED,
     },
 });
-tokens.mul.LONGER_ALT = tokens.pow; //assign longer_alt
 
-//TODO: Move to helper library
-var factorialCache: number[] = [];
-function factorial(n: number): number {
-    if (isNaN(n)) return 0;
-    if (n == 0 || n == 1) return 1;
-    if (factorialCache[n] > 0) return factorialCache[n];
-    return (factorialCache[n] = factorial(n - 1) * n);
-}
+//assign longer_alt
+tokens.mul.LONGER_ALT = tokens.pow;
+tokens.sub.LONGER_ALT = tokens.value;
+
+let helpers = new MathHelpers();
 
 export default class MathInterpreter extends HighlightParser<number> {
+    private flags: {approx: boolean};
     constructor() {
         super(tokenList);
         this.performSelfAnalysis();
+        this.flags = {approx: false};
     }
     public variables = {};
     public functions = {
@@ -78,12 +77,16 @@ export default class MathInterpreter extends HighlightParser<number> {
             return args.reduce((a, b) => a + b) / args.length;
         },
     } as {[key: string]: any};
+    public get isApproximation(): boolean {
+        return this.flags.approx;
+    }
 
-    public evaluate(query: string): string | undefined {
+    public evaluate(query: string): number | undefined {
+        this.flags = {approx: false};
         var {errors, result} = super.execute(query);
         if (errors?.length) return;
         if (result) {
-            return result.toString();
+            return result;
         }
     }
 
@@ -123,11 +126,16 @@ export default class MathInterpreter extends HighlightParser<number> {
         return result;
     });
     protected factorialTerm = this.RULE("factorialTerm", () => {
-        let result = this.SUBRULE(this.factor);
+        var result = this.SUBRULE(this.factor);
         this.OPTION(() => {
             this.MANY(() => {
                 this.CONSUME(tokens.factorial);
-                result = factorial(result);
+                let data = helpers.factorial(result);
+                this.ACTION(() => {
+                    //Set approximation flag
+                    this.flags.approx = data.approx;
+                });
+                result = data.result;
             });
         });
         return result;

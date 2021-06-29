@@ -2,10 +2,14 @@ import React, {FC} from "react";
 
 import {
     Box,
+    copyAction,
+    createAction,
+    createNumberSetting,
     createSettings,
     createSettingsFolder,
     createStandardMenuItem,
     declare,
+    FillBox,
     Priority,
     useIOContext,
 } from "@launchmenu/core";
@@ -25,18 +29,49 @@ export const settings = createSettings({
     settings: () =>
         createSettingsFolder({
             ...info,
-            children: {},
+            children: {
+                roundTo: createNumberSetting({
+                    name: "Round to",
+                    description: "Number of decimal places to round to.",
+                    init: 10,
+                    tags: ["calculator", "round", "decimal places"],
+                }),
+            },
         }),
 });
 
-const Content: FC<{query: string; result: string}> = ({query, result}) => {
-    // const context = useIOContext();
+const Content: FC<{query: string; result: number; isApproximation: boolean}> = ({
+    query,
+    result,
+    isApproximation,
+}) => {
+    const context = useIOContext();
     // const [hook] = useDataHook();
+
+    let numberOfDigits = context?.settings.get(settings).roundTo.get() || 10;
+    let equalsOrApprox = isApproximation ? "≈" : "=";
     return (
-        <Box color="primary">
-            {query} =<hr></hr>
-            {result}
-        </Box>
+        <FillBox
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            padding="extraLarge">
+            <Box display="table" flexGrow={1}>
+                <Box
+                    display="table-row"
+                    color="tertiary"
+                    textAlign="center"
+                    css={{fontSize: "25px"}}>
+                    {query} {equalsOrApprox}
+                </Box>
+                <hr></hr>
+                <Box display="table-row" textAlign="center" css={{fontSize: "25px"}}>
+                    {numberOfDigits > 0
+                        ? Math.round(result * 10 ** numberOfDigits) / 10 ** numberOfDigits
+                        : result}
+                </Box>
+            </Box>
+        </FillBox>
     );
 };
 
@@ -60,10 +95,17 @@ export default declare({
 
                     //Create returned item
                     item: createStandardMenuItem({
-                        name: result,
+                        name: result.toString(),
                         icon: <BiCalculator />,
-                        content: <Content query={query.search} result={result} />,
+                        content: (
+                            <Content
+                                query={query.search}
+                                result={result}
+                                isApproximation={math.isApproximation}
+                            />
+                        ),
                         onExecute: () => {},
+                        actionBindings: [],
                     }),
                 },
             };

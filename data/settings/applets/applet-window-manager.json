@@ -2,14 +2,14 @@
     "version": "0.0.0",
     "data": {
         "position": {
-            "x": 760,
-            "y": 512
+            "x": 571,
+            "y": 293
         },
         "size": {
             "width": 700,
             "height": 450
         },
-        "windowShadow": true,
+        "windowShadow": false,
         "visibility": {
             "hideOnBlur": false,
             "showDebugger": "true"
