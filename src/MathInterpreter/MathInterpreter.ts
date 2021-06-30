@@ -84,7 +84,21 @@ export default class MathInterpreter extends HighlightParser<number> {
     public evaluate(query: string): number | undefined {
         this.flags = {approx: false};
         var {errors, result} = super.execute(query);
-        if (errors?.length) return;
+        if (errors?.length) {
+            let unbalancedParens = errors.filter(e =>
+                /expecting EOF but found: \)$/.test(e.message)
+            );
+            if (unbalancedParens.length == errors.length) {
+                if (unbalancedParens.length == 1) {
+                    let error = unbalancedParens[0];
+                    //@ts-ignore
+                    console.log("poopy", error, this, this.gastProductionsCache);
+                    //@ts-ignore
+                    console.log(this.computeContentAssist("expression", this.tokVector));
+                }
+            }
+            return;
+        }
         if (result) {
             return result;
         }

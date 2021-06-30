@@ -85,6 +85,7 @@ export default declare({
     info,
     settings,
     async search(query, hook) {
+        if (query.search == "") return {};
         //Get result as string
         var result = math.evaluate(query.search);
         if (result) {
