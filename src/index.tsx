@@ -3,11 +3,14 @@ import React, {FC} from "react";
 import {
     Box,
     copyAction,
+    copyExitPasteHandler,
+    copyTextHandler,
     createAction,
     createNumberSetting,
     createSettings,
     createSettingsFolder,
     createStandardMenuItem,
+    createStandardSearchPatternMatcher,
     declare,
     FillBox,
     Priority,
@@ -15,6 +18,8 @@ import {
 } from "@launchmenu/core";
 import {BiCalculator} from "react-icons/bi";
 import MathInterpreter from "./MathInterpreter/MathInterpreter";
+import {round} from "./MathInterpreter/MathHelpers";
+import {useDataHook} from "model-react";
 
 const info = {
     name: "Calculator",
@@ -46,9 +51,9 @@ const Content: FC<{query: string; result: number; isApproximation: boolean}> = (
     isApproximation,
 }) => {
     const context = useIOContext();
-    // const [hook] = useDataHook();
+    const [h] = useDataHook();
 
-    let numberOfDigits = context?.settings.get(settings).roundTo.get() || 10;
+    let numberOfDigits = context?.settings.get(settings).roundTo.get(h) ?? 10;
     let equalsOrApprox = isApproximation ? "≈" : "=";
     return (
         <FillBox
@@ -56,19 +61,22 @@ const Content: FC<{query: string; result: number; isApproximation: boolean}> = (
             justifyContent="center"
             alignItems="center"
             padding="extraLarge">
-            <Box display="table" flexGrow={1}>
+            <Box flexGrow={1}>
                 <Box
-                    display="table-row"
-                    color="tertiary"
+                    color="fontBgSecondary"
                     textAlign="center"
-                    css={{fontSize: "25px"}}>
+                    css={{
+                        fontSize: "25px",
+                    }}>
                     {query} {equalsOrApprox}
+                    <Box
+                        borderBottom="normal"
+                        borderColor="fontBgSecondary"
+                        opacity={0.2}
+                    />
                 </Box>
-                <hr></hr>
-                <Box display="table-row" textAlign="center" css={{fontSize: "25px"}}>
-                    {numberOfDigits > 0
-                        ? Math.round(result * 10 ** numberOfDigits) / 10 ** numberOfDigits
-                        : result}
+                <Box textAlign="center" css={{fontSize: "25px"}} color="primary">
+                    {numberOfDigits > 0 ? round(result, numberOfDigits) : result}
                 </Box>
             </Box>
         </FillBox>
@@ -76,6 +84,12 @@ const Content: FC<{query: string; result: number; isApproximation: boolean}> = (
 };
 
 const math = new MathInterpreter();
+
+const searchPatternMatcher = createStandardSearchPatternMatcher({
+    name: "Calculator",
+    matcher: /^=/,
+    highlighter: math,
+});
 
 // const res = parser.execute(field.get());
 // if (res.result) alert(res.result);
@@ -86,27 +100,40 @@ export default declare({
     settings,
     async search(query, hook) {
         if (query.search == "") return {};
+
+        const patternMatch = searchPatternMatcher(query, hook);
+
         //Get result as string
         var result = math.evaluate(query.search);
+        const calculation = patternMatch?.searchText ?? query.search;
         if (result) {
             return {
+                patternMatch,
                 item: {
                     //Top priority
-                    priority: Priority.EXTRAHIGH,
+                    priority: /[0-9\-]+/.test(query.search)
+                        ? Priority.HIGH
+                        : Priority.EXTRAHIGH,
 
                     //Create returned item
                     item: createStandardMenuItem({
-                        name: result.toString(),
+                        name: (math.isApproximation ? "≈" : "=") + result.toString(),
                         icon: <BiCalculator />,
                         content: (
                             <Content
-                                query={query.search}
+                                query={calculation}
                                 result={result}
                                 isApproximation={math.isApproximation}
                             />
                         ),
-                        onExecute: () => {},
-                        actionBindings: [],
+                        actionBindings: [
+                            copyExitPasteHandler.createBinding({
+                                copy: copyTextHandler.createBinding(result.toString()),
+                            }),
+                            copyAction.createBinding(
+                                copyTextHandler.createBinding(result.toString())
+                            ),
+                        ],
                     }),
                 },
             };

@@ -1,6 +1,6 @@
 import {createHighlightTokens, HighlightParser, highlightTags} from "@launchmenu/core";
 import {Lexer} from "@launchmenu/core/build/textFields/syntax/HighlightParser";
-import {MathHelpers} from "./MathHelpers";
+import {factorial} from "./MathHelpers";
 
 const {tokens, tokenList} = createHighlightTokens({
     lBracket: {
@@ -16,9 +16,14 @@ const {tokens, tokenList} = createHighlightTokens({
     mul: {pattern: /\*/, tags: [highlightTags.operator]},
     div: {pattern: /\//, tags: [highlightTags.operator]},
     pow: {pattern: /\^|\*\*/, tags: [highlightTags.operator]},
+    percent: {pattern: /\%/, tags: [highlightTags.operator]},
+    equals: {
+        pattern: /\=/,
+        tags: [highlightTags.operator],
+    },
     factorial: {pattern: /\!/, tags: [highlightTags.operator]},
     paramSeperator: {pattern: /\,/, tags: [highlightTags.operator]},
-    functionName: {pattern: /[a-zA-Z_]\w+/, tags: [highlightTags.operator]},
+    functionName: {pattern: /[a-zA-Z_]\w+/, tags: [highlightTags.variable]},
     value: {
         pattern: /\-?(\d*\.)?\d+/,
         tags: [highlightTags.literal, highlightTags.number],
@@ -33,8 +38,6 @@ const {tokens, tokenList} = createHighlightTokens({
 //assign longer_alt
 tokens.mul.LONGER_ALT = tokens.pow;
 tokens.sub.LONGER_ALT = tokens.value;
-
-let helpers = new MathHelpers();
 
 export default class MathInterpreter extends HighlightParser<number> {
     private flags: {approx: boolean};
@@ -72,6 +75,8 @@ export default class MathInterpreter extends HighlightParser<number> {
         log: Math.log,
         log10: Math.log10,
         rnd: Math.random,
+        modulo: (a: number, b: number): number => a - b * Math.floor(a / b),
+        remainder: (a: number, b: number): number => a % b,
         sum: (...args: number[]): number => args.reduce((a, b) => a + b),
         avg: (...args: number[]): number => {
             return args.reduce((a, b) => a + b) / args.length;
@@ -91,10 +96,10 @@ export default class MathInterpreter extends HighlightParser<number> {
             if (unbalancedParens.length == errors.length) {
                 if (unbalancedParens.length == 1) {
                     let error = unbalancedParens[0];
-                    //@ts-ignore
-                    console.log("poopy", error, this, this.gastProductionsCache);
-                    //@ts-ignore
-                    console.log(this.computeContentAssist("expression", this.tokVector));
+                    // //@ts-ignore
+                    // console.log("poopy", error, this, this.gastProductionsCache);
+                    // //@ts-ignore
+                    // console.log(this.computeContentAssist("expression", this.tokVector));
                 }
             }
             return;
@@ -106,6 +111,13 @@ export default class MathInterpreter extends HighlightParser<number> {
 
     // Note that by default the first defined rule becomes the start rule
     // (this can be change by passing a config to the constructor)
+    protected calculation = this.RULE("calculation", () => {
+        this.OPTION(() => {
+            this.CONSUME(tokens.equals);
+        });
+        return this.SUBRULE(this.expression);
+    });
+
     protected expression = this.RULE("expression", () => {
         let result: number = this.SUBRULE(this.term);
         this.MANY(() => {
@@ -141,16 +153,26 @@ export default class MathInterpreter extends HighlightParser<number> {
     });
     protected factorialTerm = this.RULE("factorialTerm", () => {
         var result = this.SUBRULE(this.factor);
-        this.OPTION(() => {
-            this.MANY(() => {
-                this.CONSUME(tokens.factorial);
-                let data = helpers.factorial(result);
-                this.ACTION(() => {
-                    //Set approximation flag
-                    this.flags.approx = data.approx;
-                });
-                result = data.result;
-            });
+        this.MANY(() => {
+            this.OR([
+                {
+                    ALT: () => {
+                        this.CONSUME(tokens.factorial);
+                        let data = factorial(result);
+                        this.ACTION(() => {
+                            //Set approximation flag
+                            this.flags.approx = data.approx;
+                        });
+                        result = data.result;
+                    },
+                },
+                {
+                    ALT: () => {
+                        this.CONSUME(tokens.percent);
+                        result = result / 100;
+                    },
+                },
+            ]);
         });
         return result;
     });
